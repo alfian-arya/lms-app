@@ -1,12 +1,6 @@
 import { IconBadge } from "@/components/icon-badge";
 import { db } from "@/lib/db";
-import {
-  File,
-  LayoutDashboard,
-  ListChecks,
-  LucideAirplay,
-  LucideCheck,
-} from "lucide-react";
+import { File, LayoutDashboard, ListChecks, Receipt } from "lucide-react";
 import { redirect } from "next/navigation";
 import { TitleForm } from "./_components/title-form";
 import { DescriptionForm } from "./_components/description-form";
@@ -14,6 +8,7 @@ import { ImageForm } from "./_components/image-form";
 import { CategoryForm } from "./_components/category-form";
 import { PriceForm } from "./_components/price-form";
 import { AttachmentForm } from "./_components/attachment-form";
+import { ChapterForm } from "./_components/chapter-form";
 
 const CourseIdPage = async ({
   params,
@@ -27,6 +22,11 @@ const CourseIdPage = async ({
       id: params.courseId,
     },
     include: {
+      chapters: {
+        orderBy: {
+          position: "asc",
+        },
+      },
       attachments: {
         orderBy: {
           createdAt: "desc",
@@ -53,6 +53,7 @@ const CourseIdPage = async ({
     course.imageUrl,
     course.price,
     course.categoryId,
+    course.chapters.some(chapter => chapter.isPublished)
   ];
 
   const totalfields = requiredFields.length;
@@ -71,7 +72,7 @@ const CourseIdPage = async ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16">
         <div>
           <div className="flex items-center gap-x-2">
-            <IconBadge icon={LayoutDashboard} variant="success" />
+            <IconBadge icon={LayoutDashboard} />
             <h2 className="text-xl">Customize your course</h2>
           </div>
 
@@ -94,14 +95,14 @@ const CourseIdPage = async ({
               <h2 className="text-xl">Course Chapters</h2>
             </div>
             <div className="pt-2">TODO: Chapters</div>
+            <ChapterForm initialData={course} courseId={course.id} />
           </div>
           <div>
             <div>
               <div className="flex items-center gap-x-2">
-                <IconBadge icon={LucideCheck} />
+                <IconBadge icon={Receipt} />
                 <h2 className="text-xl">Course Price</h2>
               </div>
-              <div className="pt-2">TODO: Preview</div>
               <PriceForm initialData={course} courseId={course.id} />
             </div>
           </div>
